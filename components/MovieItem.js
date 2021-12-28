@@ -1,13 +1,13 @@
 import styled from "styled-components/native";
 import { AntDesign } from '@expo/vector-icons'; 
-import { Image } from 'react-native';
+import { Image, ImageBackground, View } from 'react-native';
 
-export default function MovieItem({ imageUrl, title, description, ratio }) {
+export default function MovieItem({ imageUrl, backgroundUrl, title, description, ratio }) {
     return (
-        <Item>
+        <Item source={{uri: backgroundUrl}} imageStyle={{ borderRadius: 5, opacity: 0.35}}>
             <ItemImage>
                 <Image
-                    style={{width: 80, height: 80}}
+                    style={{flex: 1, width: 80, borderRadius: 3}}
                     source={{
                         uri: imageUrl,
                     }}
@@ -15,23 +15,27 @@ export default function MovieItem({ imageUrl, title, description, ratio }) {
             </ItemImage>
             <ItemInfo>
                 <ItemTitle numberOfLines={1}>{title}</ItemTitle>
-                <ItemDescription numberOfLines={2}>{description}</ItemDescription>
+                <ItemDescription numberOfLines={4}>{description}</ItemDescription>
                 <ItemRatio>{ratio} <AntDesign name="star" /></ItemRatio>
             </ItemInfo>
+            <ItemFav>
+                <AntDesign name="hearto" size={20} color="crimson" />
+            </ItemFav>
         </Item>
     );
 }
 
-const Item = styled.View`
+const Item = styled.ImageBackground`
+    margin-bottom: 10px;
+    flex-direction: row;
     background-color: black;
     border-radius: 5px;
-    flex-direction: row;
     align-items: center;
-    margin-bottom: 10px;
+    overflow: hidden;
 `;
 
 const ItemImage = styled.View`
-    padding: 5px;
+    padding: 3px;
 `;
 
 const ItemInfo = styled.View`
@@ -45,9 +49,14 @@ const ItemTitle = styled.Text`
 `;
 
 const ItemDescription = styled.Text`
-    color: rgba(255, 255, 255, 0.55);
+    color: white;
+    text-align: justify;
 `;
 
 const ItemRatio = styled.Text`
     color: gold;
+`;
+
+const ItemFav = styled.View`
+    padding: 10px;
 `;
