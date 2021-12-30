@@ -17,6 +17,7 @@ export default function MovieList({ listRef, data, isLoading, onRefresh, onEndRe
         title={item.title || item.name}
         description={item.overview}
         ratio={item.vote_average}
+        id={item.id}
       />
     );
   }

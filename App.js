@@ -5,6 +5,7 @@ import Home from './components/Home';
 import Menu from './components/Menu';
 import { NativeRouter, Route, Routes, Link } from "react-router-native";
 import Search from './components/Search';
+import Favorites from './components/Favorites';
 
 export default function App() {
 
@@ -19,6 +20,7 @@ export default function App() {
           <Routes>
             <Route exact path="/" element={<HeaderText>Trending</HeaderText>} />
             <Route path="/search" element={<HeaderText>Search</HeaderText>} />
+            <Route path="/favorites" element={<HeaderText>Favorites</HeaderText>} />
           </Routes>
         </Header>
 
@@ -26,6 +28,7 @@ export default function App() {
           <Routes>
             <Route exact path="/" element={<Home listRef={listRef} />} />
             <Route path="/search" element={<Search />} />
+            <Route path="/favorites" element={<Favorites />} />
           </Routes>
         </Body>
 

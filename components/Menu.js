@@ -12,9 +12,9 @@ export default function Menu({ listRef }) {
             <Link to='/search' style={{flex: 1, alignItems: 'center', padding: 10}}>
                 <MaterialIcons name="search" size={28} color="white" />
             </Link>
-            <MenuButton>
+            <Link to='/favorites' style={{flex: 1, alignItems: 'center', padding: 10}}>
                 <MaterialCommunityIcons name="heart" size={28} color="white" />
-            </MenuButton>
+            </Link>
         </Container>
     )
 }

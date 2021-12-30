@@ -1,17 +1,42 @@
 import styled from "styled-components/native";
-import { AntDesign } from '@expo/vector-icons'; 
+import { AntDesign } from '@expo/vector-icons';
 import { Image, ImageBackground, View } from 'react-native';
-import { memo, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 
-function MovieItem({ imageUrl, backgroundUrl, title, description, ratio }) {
+import {
+    getFavorites as getFavoritesFromApi,
+    addFavorite as addFavoriteFromApi,
+    removeFavorite as removeFavoriteFromApi
+} from '../api/MovieAPI';
+
+function MovieItem({ imageUrl, backgroundUrl, title, description, ratio, id }) {
 
     const [isFav, setFav] = useState(false);
 
+    async function isFavorite() {
+        const favorites = await getFavoritesFromApi();
+        let res = false;
+        favorites.forEach(movieId => {
+            if (movieId == id) res = true;
+        })
+        setFav(res);
+    }
+
+    async function changeFavorite() {
+        let result = !isFav;
+        setFav(!isFav);
+        result ? addFavoriteFromApi(id) : removeFavoriteFromApi(id);
+    }
+
+    useEffect(() => {
+        isFavorite();
+    }, []);
+
     return (
-        <Item source={{uri: backgroundUrl}} imageStyle={{ borderRadius: 5, opacity: 0.35}}>
+        <Item source={{ uri: backgroundUrl }} imageStyle={{ borderRadius: 5, opacity: 0.35 }}>
             <ItemImage>
                 <Image
-                    style={{height: 110, width: 80, borderRadius: 3}}
+                    style={{ height: 110, width: 80, borderRadius: 3 }}
                     source={{
                         uri: imageUrl,
                     }}
@@ -23,7 +48,7 @@ function MovieItem({ imageUrl, backgroundUrl, title, description, ratio }) {
                 <ItemRatio>{ratio} <AntDesign name="star" /></ItemRatio>
             </ItemInfo>
             <ItemFav>
-                <AntDesign name={isFav ? "heart" : "hearto"} size={20} color="crimson" onPress={() => { setFav(!isFav)}} />
+                <AntDesign name={isFav ? "heart" : "hearto"} size={20} color="crimson" onPress={() => { changeFavorite() }} />
             </ItemFav>
         </Item>
     );

@@ -4,7 +4,8 @@ import styled from 'styled-components/native';
 import MovieListHeader from "./MovieListHeader";
 import MovieList from "./MovieList";
 
-import { getMovies as getMoviesFromApi } from '../api/MovieAPI';
+import { getMovies as getMoviesFromApi, 
+         getFavorites as getFavoritesFromApi } from '../api/MovieAPI';
 
 export default function Home({ listRef }) {
 
@@ -13,6 +14,7 @@ export default function Home({ listRef }) {
     const [mediaType, setMediaType]  = useState('movie');
     const [timeWindow, setTimeWindow] = useState('week');
     const [page, setPage] = useState(1);
+    const [favorites, setFavorites] = useState([]);
 
     async function getMovies() {
       setLoading(true);
@@ -24,6 +26,11 @@ export default function Home({ listRef }) {
       } finally {
         setLoading(false);
       }
+    }
+
+    async function getFavorites() {
+      const favorites = await getFavoritesFromApi();
+      setFavorites(favorites);
     }
 
     function changeMediaType(value) {
@@ -51,7 +58,9 @@ export default function Home({ listRef }) {
       }
     }, [timeWindow, mediaType, page]);
 
-    let scrollBegin = false;
+    useEffect(() => {
+      getFavorites();
+    }, [favorites])
 
     return (      
       <>
