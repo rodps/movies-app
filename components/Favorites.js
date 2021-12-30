@@ -9,14 +9,19 @@ export default function Favorites() {
 
     async function getFavoriteMovies() {
         setLoading(true);
-        const movies = await getFavoriteMoviesFromApi();
-        console.log(movies);
-        setData(movies);
-        setLoading(false);
+        try {
+            const movies = await getFavoriteMoviesFromApi();
+            setData(movies);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
+        }
     }
 
     function onRefresh() {
         setData([]);
+        getFavoriteMovies()
     }
 
     useEffect(() => {
@@ -24,6 +29,6 @@ export default function Favorites() {
     }, []);
 
     return (
-        <MovieList data={data} isLoading={isLoading} onRefresh={onRefresh} />
+        <MovieList data={data} isLoading={isLoading} onRefresh={onRefresh}  />
     )
 }
