@@ -1,13 +1,17 @@
 import styled from "styled-components/native";
 import { AntDesign } from '@expo/vector-icons'; 
 import { Image, ImageBackground, View } from 'react-native';
+import { memo, useState } from 'react';
 
-export default function MovieItem({ imageUrl, backgroundUrl, title, description, ratio }) {
+function MovieItem({ imageUrl, backgroundUrl, title, description, ratio }) {
+
+    const [isFav, setFav] = useState(false);
+
     return (
         <Item source={{uri: backgroundUrl}} imageStyle={{ borderRadius: 5, opacity: 0.35}}>
             <ItemImage>
                 <Image
-                    style={{flex: 1, width: 80, borderRadius: 3}}
+                    style={{height: 110, width: 80, borderRadius: 3}}
                     source={{
                         uri: imageUrl,
                     }}
@@ -19,7 +23,7 @@ export default function MovieItem({ imageUrl, backgroundUrl, title, description,
                 <ItemRatio>{ratio} <AntDesign name="star" /></ItemRatio>
             </ItemInfo>
             <ItemFav>
-                <AntDesign name="hearto" size={20} color="crimson" />
+                <AntDesign name={isFav ? "heart" : "hearto"} size={20} color="crimson" onPress={() => { setFav(!isFav)}} />
             </ItemFav>
         </Item>
     );
@@ -32,6 +36,8 @@ const Item = styled.ImageBackground`
     border-radius: 5px;
     align-items: center;
     overflow: hidden;
+    margin-left: 10px;
+    margin-right: 10px;
 `;
 
 const ItemImage = styled.View`
@@ -60,3 +66,5 @@ const ItemRatio = styled.Text`
 const ItemFav = styled.View`
     padding: 10px;
 `;
+
+export default memo(MovieItem);

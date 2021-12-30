@@ -1,73 +1,77 @@
-import { ActivityIndicator, FlatList, View } from "react-native";
 import { useState, useEffect } from 'react';
-import { Picker } from '@react-native-picker/picker';
+import styled from 'styled-components/native';
 
-import MovieItem from './MovieItem';
+import MovieListHeader from "./MovieListHeader";
+import MovieList from "./MovieList";
 
-export default function Home() {
+import { getMovies as getMoviesFromApi } from '../api/MovieAPI';
 
-    const [isLoading, setLoading] = useState(true);
+export default function Home({ listRef }) {
+
+    const [isLoading, setLoading] = useState(false);
     const [data, setData] = useState([]);
+    const [mediaType, setMediaType]  = useState('movie');
+    const [timeWindow, setTimeWindow] = useState('week');
+    const [page, setPage] = useState(1);
 
-    const getMovies = async () => {
-        try {
-        const response = await fetch('https://api.themoviedb.org/3/trending/movie/week?api_key=b1b73b1f6fc72e1b72afce2f77c88a94');
-        const json = await response.json();
-        setData(json.results);
-        } catch (error) {
-        console.error(error);
-        } finally {
+    async function getMovies() {
+      setLoading(true);
+      try{
+        const movies = await getMoviesFromApi(timeWindow, mediaType, page);
+        setData([...data, ...movies.results])
+      } catch(error) {
+        console.log(error);
+      } finally {
         setLoading(false);
-        }
+      }
+    }
+
+    function changeMediaType(value) {
+      setData([]);
+      setMediaType(value);
+      setPage(1);
+    }
+
+    function changeTimeWindow(value) {
+      setData([]);
+      setTimeWindow(value);
+      setPage(1);
+    }
+
+    function onRefresh() {
+      setData([]);
+      setPage(0);
     }
 
     useEffect(() => {
+      if(page == 0) {
+        setPage(1)
+      } else {
         getMovies();
-    }, []);
+      }
+    }, [timeWindow, mediaType, page]);
 
-    const ListHeader = () => {
-        return (
-          <View style={{flexDirection: 'row', justifyContent: 'center', padding: 10}}>
-            <Picker
-              selectedValue="movies"
-              style={{color: 'white', width: 150}}
-              dropdownIconColor='white'
-            >
-              <Picker.Item label="Movies" value="movies" />
-              <Picker.Item label="TV" value="tv" />
-              <Picker.Item label="Person" value="person" />
-            </Picker>
-    
-            <Picker
-              selectedValue="week"
-              style={{color: 'white', width: 150, marginLeft: 10}}
-              dropdownIconColor='white'
-            >
-              <Picker.Item label="Day" value="day" />
-              <Picker.Item label="Week" value="week" />
-            </Picker>
-          </View>
-        )
-    };
+    let scrollBegin = false;
 
-    return (
-        <>
-        {isLoading ? <ActivityIndicator color="#0000ff" /> : (
-            <FlatList
-              data={data}
-              keyExtractor={({ id }, index) => id}
-              ListHeaderComponent={ListHeader}
-              renderItem={({ item }) => (
-                <MovieItem 
-                  imageUrl={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
-                  backgroundUrl={`https://image.tmdb.org/t/p/w500${item.backdrop_path}`}
-                  title={item.title}
-                  description={item.overview}
-                  ratio={item.vote_average} 
-                />
-              )}
-            />
-        )}
-        </>
+    return (      
+      <>
+      <MovieListHeader 
+        mediaType={mediaType} 
+        onMediaTypeChange={changeMediaType}
+        timeWindow={timeWindow}
+        onTimeWindowChange={changeTimeWindow}
+      />
+      <MovieList 
+        listRef={listRef}
+        data={data} 
+        isLoading={isLoading}
+        onRefresh={onRefresh}
+        onEndReached={() => { setPage(page + 1) }} />
+      </>
     )
 }
+
+const LoadingContainer = styled.View`
+  flex: 1;
+  justify-content: center;
+`;
